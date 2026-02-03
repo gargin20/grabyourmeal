@@ -26,41 +26,20 @@ function SignUp() {
   const [loading,setLoading]=useState(false);
   const dispatch=useDispatch()
   
-  const handleSignUp = async () => {
-    loading(true)
-  if (!fullName || !email || !mobile || !password) {
-    setErr("All fields are required");
-    return;
-  }
-
-  try {
-    const result = await axios.post(
-      `${serverurl}/api/auth/signup`,
-      {
-        fullName,
-        email,
-        mobile,
-        password,
-        role,
-      },
-      { withCredentials: true }
-    );
-
-    dispatch(setUserData(result.data))
-    setErr(""); // clear error on success
-    loading(false)
-  } catch (error) {
-    console.error(
-      "DETAILED BACKEND ERROR:",
-      error.response?.data || error.message,
-      loading(false)
-    );
-
-   
-    setErr(error.response?.data?.message || "Signup failed");
-  }
-};
-
+   const handleSignUp=async () => {
+        setLoading(true)
+        try {
+            const result=await axios.post(`${serverUrl}/api/auth/signup`,{
+                fullName,email,password,mobile,role
+            },{withCredentials:true})
+            dispatch(setUserData(result.data))
+            setErr("")
+            setLoading(false)
+        } catch (error) {
+            setErr(error?.response?.data?.message)
+             setLoading(false)
+        }
+     }
   const handleGoogleAuth = async () => {
   if (!mobile) {
     alert("Mobile number is required for Google sign up");
