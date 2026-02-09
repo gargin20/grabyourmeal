@@ -102,87 +102,91 @@ export const getItemByCity = async (req, res) => {
         if (!shops) {
             return res.status(400).json({ message: "shops not found" })
         }
-        const shopIds=shops.map((shop)=>shop._id)
+        const shopIds = shops.map((shop) => shop._id)
 
-        const items=await Item.find({shop:{$in:shopIds}})
+        const items = await Item.find({ shop: { $in: shopIds } })
         return res.status(200).json(items)
 
     } catch (error) {
- return res.status(500).json({ message: `get item by city error ${error}` })
+        return res.status(500).json({ message: `get item by city error ${error}` })
     }
 }
 
-export const getItemsByShop=async (req,res) => {
+export const getItemsByShop = async (req, res) => {
     try {
-        const {shopId}=req.params
-        const shop=await Shop.findById(shopId).populate("items")
-        if(!shop){
+        const { shopId } = req.params
+        const shop = await Shop.findById(shopId).populate("items")
+        if (!shop) {
             return res.status(400).json("shop not found")
         }
         return res.status(200).json({
-            shop,items:shop.items
+            shop, items: shop.items
         })
     } catch (error) {
-         return res.status(500).json({ message: `get item by shop error ${error}` })
+        return res.status(500).json({ message: `get item by shop error ${error}` })
     }
 }
 
-export const searchItems=async (req,res) => {
+export const searchItems = async (req, res) => {
     try {
-        const {query,city}=req.query
-        if(!query || !city){
+        const { query, city } = req.query
+        if (!query || !city) {
             return null
         }
-        const shops=await Shop.find({
-            city:{$regex:new RegExp(`^${city}$`, "i")}
+        const shops = await Shop.find({
+            city: { $regex: new RegExp(`^${city}$`, "i") }
         }).populate('items')
-        if(!shops){
-            return res.status(400).json({message:"shops not found"})
+        if (!shops) {
+            return res.status(400).json({ message: "shops not found" })
         }
-        const shopIds=shops.map(s=>s._id)
-        const items=await Item.find({
-            shop:{$in:shopIds},
-            $or:[
-              {name:{$regex:query,$options:"i"}},
-              {category:{$regex:query,$options:"i"}}  
+        const shopIds = shops.map(s => s._id)
+        const matchedShops = await Shop.find({
+            city: { $regex: new RegExp(`^${city}$`, "i") },
+            name: { $regex: query, $options: "i" }
+        }).populate('items')
+
+        const matchedItems = await Item.find({
+            shop: { $in: shopIds },
+            $or: [
+                { name: { $regex: query, $options: "i" } },
+                { category: { $regex: query, $options: "i" } }
             ]
+        }).populate("shop", "name image")
 
-        }).populate("shop","name image")
-
-        return res.status(200).json(items)
+        return res.status(200).json({ items: matchedItems, shops: matchedShops })
 
     } catch (error) {
-         return res.status(500).json({ message: `search item  error ${error}` })
+        return res.status(500).json({ message: `search item  error ${error}` })
     }
 }
 
 
-export const rating=async (req,res) => {
+export const rating = async (req, res) => {
     try {
-        const {itemId,rating}=req.body
+        const { itemId, rating } = req.body
 
-        if(!itemId || !rating){
-            return res.status(400).json({message:"itemId and rating is required"})
+        if (!itemId || !rating) {
+            return res.status(400).json({ message: "itemId and rating is required" })
         }
 
-        if(rating<1 || rating>5){
-             return res.status(400).json({message:"rating must be between 1 to 5"})
+        if (rating < 1 || rating > 5) {
+            return res.status(400).json({ message: "rating must be between 1 to 5" })
         }
 
-        const item=await Item.findById(itemId)
-        if(!item){
-              return res.status(400).json({message:"item not found"})
+        const item = await Item.findById(itemId)
+        if (!item) {
+            return res.status(400).json({ message: "item not found" })
         }
 
-        const newCount=item.rating.count + 1
-        const newAverage=(item.rating.average*item.rating.count + rating)/newCount
+        const newCount = item.rating.count + 1
+        const newAverage = (item.rating.average * item.rating.count + rating) / newCount
 
-        item.rating.count=newCount
-        item.rating.average=newAverage
+        item.rating.count = newCount
+        item.rating.average = newAverage
         await item.save()
-return res.status(200).json({rating:item.rating})
+        return res.status(200).json({ rating: item.rating })
 
     } catch (error) {
-         return res.status(500).json({ message: `rating error ${error}` })
+        return res.status(500).json({ message: `rating error ${error}` })
     }
 }

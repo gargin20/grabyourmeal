@@ -3,9 +3,9 @@ import React from 'react'
 import { FaPen } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-import { serverUrl } from '../App';
+import { serverUrl } from '../App.jsx';
 import { useDispatch } from 'react-redux';
-import { setMyShopData } from '../redux/ownerSlice';
+import { setMyShopData } from '../redux/ownerSlice.js';
 function OwnerItemCard({data}) {
     const navigate=useNavigate()
     const dispatch=useDispatch()

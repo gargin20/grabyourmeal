@@ -1,8 +1,8 @@
 import axios from 'axios'
 import React, { useEffect } from 'react'
-import { serverUrl } from '../App'
+import { serverUrl } from '../App.jsx'
 import { useDispatch, useSelector } from 'react-redux'
-import { setShopsInMyCity, setUserData } from '../redux/userSlice'
+import { setShopsInMyCity, setUserData } from '../redux/userSlice.js'
 
 function useGetShopByCity() {
     const dispatch=useDispatch()

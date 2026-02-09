@@ -1,23 +1,31 @@
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-
-dotenv.config();
-
+import nodemailer from "nodemailer"
+import dotenv from "dotenv"
+dotenv.config()
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: "Gmail",
+  port: 465,
+  secure: true, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL,
-    pass: process.env.PASS, // Gmail App Password
+    pass: process.env.PASS,
   },
 });
 
-const sendOtpMail = async (to, otp) => {
-  await transporter.sendMail({
-    from: `"GRABYOURMEAL" <${process.env.EMAIL}>`,
-    to,
-    subject: "Your OTP for GRABYOURMEAL",
-    html: `<h2>Your OTP is ${otp}</h2><p>It expires in 5 minutes</p>`,
-  });
-};
+export const sendOtpMail=async (to,otp) => {
+    await transporter.sendMail({
+        from:process.env.EMAIL,
+        to,
+        subject:"Reset Your Password",
+        html:`<p>Your OTP for password reset is <b>${otp}</b>. It expires in 5 minutes.</p>`
+    })
+}
 
-export default sendOtpMail;
+
+export const sendDeliveryOtpMail=async (user,otp) => {
+    await transporter.sendMail({
+        from:process.env.EMAIL,
+        to:user.email,
+        subject:"Delivery OTP",
+        html:`<p>Your OTP for delivery is <b>${otp}</b>. It expires in 5 minutes.</p>`
+    })
+}

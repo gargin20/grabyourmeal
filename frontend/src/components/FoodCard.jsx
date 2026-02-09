@@ -7,7 +7,7 @@ import { FaMinus } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../redux/userSlice';
+import { addToCart } from '../redux/userSlice.js';
 
 function FoodCard({data}) {
 const [quantity,setQuantity]=useState(0)

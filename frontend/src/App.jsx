@@ -1,29 +1,30 @@
 import React from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import SignUp from './pages/SignUp'
-import SignIn from './pages/SignIn'
-import ForgotPassword from './pages/ForgotPassword'
-import useGetCurrentUser from './hooks/useGetCurrentUser'
+import SignUp from './pages/SignUp.jsx'
+import SignIn from './pages/SignIn.jsx'
+import ForgotPassword from './pages/ForgotPassword.jsx'
+import useGetCurrentUser from './hooks/useGetCurrentUser.jsx'
 import { useDispatch, useSelector } from 'react-redux'
-import Home from './pages/Home'
-import useGetCity from './hooks/useGetCity'
-import useGetMyshop from './hooks/useGetMyShop'
-import CreateEditShop from './pages/CreateEditShop'
-import AddItem from './pages/AddItem'
-import EditItem from './pages/EditItem'
-import useGetShopByCity from './hooks/useGetShopByCity'
-import useGetItemsByCity from './hooks/useGetItemsByCity'
-import CartPage from './pages/CartPage'
-import CheckOut from './pages/CheckOut'
-import OrderPlaced from './pages/OrderPlaced'
-import MyOrders from './pages/MyOrders'
-import useGetMyOrders from './hooks/useGetMyOrders'
-import useUpdateLocation from './hooks/useUpdateLocation'
-import TrackOrderPage from './pages/TrackOrderPage'
-import Shop from './pages/Shop'
+import Home from './pages/Home.jsx'
+import useGetCity from './hooks/useGetCity.jsx'
+import useGetMyshop from './hooks/useGetMyShop.jsx'
+import CreateEditShop from './pages/createEditShop.jsx'
+import AddItem from './pages/AddItem.jsx'
+import EditItem from './pages/EditItem.jsx'
+import useGetShopByCity from './hooks/useGetShopByCity.jsx'
+import useGetItemsByCity from './hooks/useGetItemsByCity.jsx'
+import CartPage from './pages/CartPage.jsx'
+import CheckOut from './pages/CheckOut.jsx'
+import OrderPlaced from './pages/OrderPlaced.jsx'
+import MyOrders from './pages/MyOrders.jsx'
+import useGetMyOrders from './hooks/useGetMyOrders.jsx'
+import useUpdateLocation from './hooks/useUpdateLocation.jsx'
+import TrackOrderPage from './pages/TrackOrderPage.jsx'
+import Shop from './pages/Shop.jsx'
 import { useEffect } from 'react'
 import { io } from 'socket.io-client'
-import { setSocket } from './redux/userSlice'
+import { socket } from './socket'
+
 
 export const serverUrl="http://localhost:8000"
 function App() {
@@ -37,18 +38,20 @@ useUpdateLocation()
   useGetItemsByCity()
   useGetMyOrders()
 
-  useEffect(()=>{
-const socketInstance=io(serverUrl,{withCredentials:true})
-dispatch(setSocket(socketInstance))
-socketInstance.on('connect',()=>{
-if(userData){
-  socketInstance.emit('identity',{userId:userData._id})
-}
-})
-return ()=>{
-  socketInstance.disconnect()
-}
-  },[userData?._id])
+useEffect(() => {
+  socket.connect();
+
+  socket.on("connect", () => {
+    if (userData) {
+      socket.emit("identity", { userId: userData._id });
+    }
+  });
+
+  return () => {
+    socket.off("connect");
+    socket.disconnect();
+  };
+}, [userData?._id]);
 
   return (
    <Routes>

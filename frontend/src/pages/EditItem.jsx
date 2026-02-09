@@ -6,8 +6,8 @@ import { FaUtensils } from "react-icons/fa";
 import { useState } from 'react';
 import { useRef } from 'react';
 import axios from 'axios';
-import { serverUrl } from '../App';
-import { setMyShopData } from '../redux/ownerSlice';
+import { serverUrl } from '../App.jsx';
+import { setMyShopData } from '../redux/ownerSlice.js';
 import { ClipLoader } from 'react-spinners';
 function EditItem() {
     const navigate = useNavigate()

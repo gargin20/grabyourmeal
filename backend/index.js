@@ -43,8 +43,14 @@ app.use("/api/item",itemRouter)
 app.use("/api/order",orderRouter)
 
 socketHandler(io)
-server.listen(port,()=>{
-    connectDb()
-    console.log(`server started at ${port}`)
+
+connectDb().then(()=>{
+    server.listen(port,()=>{
+        console.log(`server started at ${port}`)
+        console.log("MongoDB connected successfully")
+    })
+}).catch((err)=>{
+    console.log("Detailed DB connection error:", err)
+    // Optional: process.exit(1) if you want to stop the process
 })
 
